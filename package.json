@@ -1,0 +1,36 @@
+{
+  "name": "bayamjewelry-api",
+  "version": "1.0.0",
+  "main": "api.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node functions/api.js",
+    "dev": "nodemon functions/api.js",
+    "build": "netlify deploy --prod"
+  },
+  "author": "Pupinder Singh",
+  "description": "API Server for Bayam Jewelry API Management.",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {
+    "@shopify/shopify-api": "^7.6.0",
+    "axios": "^1.4.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "buffer-equal-constant-time": "^1.0.1",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-jwt": "^8.4.1",
+    "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
+    "https": "^1.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "morgan": "^1.10.0",
+    "rootpath": "^0.1.2",
+    "uuid": "^9.0.0"
+  }
+}
