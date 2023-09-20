@@ -5,4 +5,4 @@ function response(responseBody, errorBody) {
   return newResponse;
 }
 
-module.exports = response;
+module.exports = {response};
