@@ -7,6 +7,7 @@ let app = express();
 let session = require("express-session");
 let bodyParser = require("body-parser");
 const { expressjwt } = require('express-jwt');
+const serverless = require("serverless-http");
 
 
 let morganFormatString =
@@ -101,8 +102,8 @@ app.use('/api', expressjwt(
   })
 );
 
-app.use("/api/orders", require("./controllers/orders.controller"));
-app.use("/api/discount", require("./controllers/discount.controller"))
+app.use("/.netlify/functions/api/orders", require("./controllers/orders.controller"));
+app.use("/.netlify/functions/api/discount", require("./controllers/discount.controller"))
 // app.use("/api/creditcards", require("./controllers/creditcard.controller"));
 
 // app.use("/stripe", require("./controllers/stripe.controller"));
@@ -133,3 +134,4 @@ let server = app.listen(process.env.PORT || 5858, function () {
   let port = server.address().port;
   console.log("API Server Now Running On Port.", port);
 });
+module.exports.handler = serverless(app);
