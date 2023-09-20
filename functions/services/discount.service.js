@@ -19,7 +19,13 @@ async function getDiscountCouponDetails({ code }, user) {
 				startAt: filterPrice.starts_at,
 				endsAt: filterPrice.ends_at,
 				createdAt: filterPrice.created_at,
-				updatedAt: filterPrice.updated_at
+				updatedAt: filterPrice.updated_at,
+				prerequisite_subtotal_range: filterPrice.prerequisite_subtotal_range,
+				entitled_product_ids: filterPrice.entitled_product_ids,
+				target_selection: filterPrice.target_selection,
+				id: filterPrice.id,
+				entitled_collection_ids: filterPrice.entitled_collection_ids,
+				entitled_variant_ids: filterPrice.entitled_variant_ids
 			};
 		} else {
 			return {};
