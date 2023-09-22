@@ -34,16 +34,20 @@ async function createOrder(order, user) {
 					},
 					"subtotal_price": order?.subTotalPrice,
 					"total_price": order?.totalPrice,
-					"total_tax": order?.totalTax
+					"total_tax": order?.totalTax,
+					"taxes_included": false,
 				}
 			};
 
 			if(lookupDiscount?.discount_code?.code) {
 				orderData.draft_order.applied_discount = {
 					"title": order?.appliedDiscount?.title,
-					"amount": order?.appliedDiscount?.amount
+					"amount": order?.appliedDiscount?.amount,
+					"description":order?.appliedDiscount?.description,
+					"value_type":order?.appliedDiscount?.value_type,
+					"value": order?.appliedDiscount?.value,
 				}
-			}
+			  }
 			let draftOrder = await shopifyService.postCall('draft_orders.json', orderData);
 			if (draftOrder?.draft_order) {
 				let completeOrder = await shopifyService.putCall('/draft_orders/' + draftOrder.draft_order.id + '/complete.json?payment_pending=true', {});

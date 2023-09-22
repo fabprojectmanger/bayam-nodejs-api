@@ -1,67 +1,44 @@
-let _ = require('lodash');
-let Q = require('q');
-let Cards = require('../schemas/creditcards.schema');
+const axios = require('axios');
+async function makePayment(card_data,transaction_data) {
 
-let service = {};
-service.getCustomerCreditCard = getCustomerCreditCard;
-service.updateCardData = updateCardData;
-service.createCardData = createCardData;
-service.getCustomerCreditCards = getCustomerCreditCards;
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const clientSecret = process.env.PAYPAL_SECRET;
 
-function getCustomerCreditCards(shopifyId) {
-  let deferred = Q.defer();
-  Cards.find({ shopifyId: shopifyId }, '-shopifyId -squareId -cardData.id').then(cards => {
-    deferred.resolve(cards);
-  }).catch(err => {
-    deferred.reject(err.name + ': ' + err.message);
-  })
-  return deferred.promise;
-}
+    const paymentData = {
+      intent: 'sale',
+      payer: {
+        payment_method: 'credit_card',
+        funding_instruments: [
+          {
+            credit_card: card_data,
+          },
+        ],
+      },
+      transactions: [
+        {
+          amount: {
+            total: transaction_data?.value.toString(),
+            currency: transaction_data?.currency,
+          },
+        },
+      ],
+    };
 
-function getCustomerCreditCard(query) {
-  let deferred = Q.defer();
-  Cards.findOne(query).then(card => {
-    deferred.resolve(card);
-  }).catch(err => {
-    deferred.reject(err.name + ': ' + err.message);
-  })
-  return deferred.promise;
-}
-
-// To be used by application only.
-function updateCardData(id, cardUpdates) {
-  let deferred = Q.defer();
-  try {
-    Cards.findOneAndUpdate({ shopifyId: id }, { cardData: cardUpdates.cardData, updated: new Date() }, { new: true, upsert: true })
-      .then(cardData => {
-        if (cardData.cardData) {
-          delete cardData.cardData.id;
-          delete cardData.cardData.billing_address;
-          delete cardData.cardData.cardholder_name;
-        }
-        return deferred.resolve(cardData);
-      }).catch(err => {
-        return deferred.reject(err.name + ': ' + err.message);
+    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    try{
+    const response=await axios
+      .post('https://api-m.sandbox.paypal.com/v1/payments/payment', paymentData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${auth}`,
+        },
       })
-  } catch (e) {
-    console.error('There was an error inserting new card into DB: ', e);
-    return deferred.reject('Server error storing credit card');
-  }
-  return deferred.promise;
+      return response.data;
+    }
+    catch (error) {
+      console.error('Error getting access token:', error);
+      throw error;
+    }
+ 
 }
-
-function createCardData(data) {
-  let deferred = Q.defer();
-  let card = new Cards(data);
-  card.save().then(cardData => {
-    delete cardData.cardData.id;
-    delete cardData.cardData.billing_address;
-    delete cardData.cardData.cardholder_name;
-    deferred.resolve(cardData);
-  }).catch(err => {
-    deferred.reject(err.name + ': ' + err.message);
-  });
-  return deferred.promise;
-}
-
-module.exports = service;
+module.exports = { makePayment }
