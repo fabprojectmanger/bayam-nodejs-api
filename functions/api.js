@@ -124,7 +124,7 @@ app.use('/api', expressjwt(
 //Netlify
 app.use("/.netlify/functions/api/orders", require("./controllers/orders.controller"));
 app.use("/.netlify/functions/api/discount", require("./controllers/discount.controller"))
-app.use("/.netlify/functions/api/payment",require("./controllers/creditcard.controller"))
+app.use("/process-payment",require("./controllers/stripePayment.controller"))
 // app.use("/api/orders",require("./controllers/orderPayment.controller"))
 
 //local

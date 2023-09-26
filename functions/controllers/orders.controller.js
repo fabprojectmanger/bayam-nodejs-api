@@ -16,5 +16,16 @@ router.post('/', async function (req, res) {
 		res.status(400).send('Error processing order checkout: ', error);
 	}
 });
+router.post('/payment', async function (req, res) {
+	try {
+		let data = await OrdersService.orderPayment(req.body);
+		let response = ResponseService.response(data, null);
+		res.status(200).send(response);
+	} catch (error) {
+		console.error('Error processing payment: ', error.message);
+		res.status(400).send('Error processing payment: ', error);
+	}
+});
+
 
 module.exports = router;
