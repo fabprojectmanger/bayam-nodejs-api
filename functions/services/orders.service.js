@@ -62,7 +62,7 @@ async function createOrder(order, user) {
 async function orderPayment(transactionDetails){
 	try{
 		console.log("transactionDetails................",transactionDetails);
-		let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${transactionDetails.orderId}/transactions.json`);
+		let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${transactionDetails.orderId}/transactions.json`,transactionDetails);
 		console.log("Transaction................",transaction);
 		return transaction.status;
 	}
