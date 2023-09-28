@@ -67,7 +67,7 @@ async function orderPayment(orderDetails) {
 			let transactionObj = {
 				transaction: {
 					currency: "USD",
-					amount: orderData.amount,
+					amount: orderDetails.amount,
 					kind: "capture",
 					parent_id: transactionId
 				}
