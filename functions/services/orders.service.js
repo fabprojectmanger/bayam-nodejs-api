@@ -72,9 +72,11 @@ async function orderPayment(orderDetails) {
 					parent_id: transactionId
 				}
 			};
+			console.log("---------------------",transactionId);
+			console.log("**********************",transactionObj)
 			try {
-				let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
-				return transaction;
+				// let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
+				// return transaction;
 			} catch (e) {
 				throw e;
 			}
