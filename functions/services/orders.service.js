@@ -61,7 +61,9 @@ async function createOrder(order, user) {
 }
 async function orderPayment(orderDetails) {
 	try {
+		console.log("----------orderDetails-----------",orderDetails);
 		let transactionDeatils = await shopifyService.getCall(`/admin/api/2023-04/orders/${orderDetails.orderId}/transactions.json`);
+		console.log("--Transaction Details ---------------",transactionDeatils)
 		if (transactionDeatils && transactionDeatils.transactions.length > 0) {
 			let transactionId = transactionDeatils.transactions.id
 			let transactionObj = {
