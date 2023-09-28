@@ -4,7 +4,7 @@ async function createOrder(order, user) {
 	try {
 
 		let lookupDiscount = await shopifyService.getCall(`/discount_codes/lookup.json?code=${order?.appliedDiscount?.title}`);
-		
+
 		let orderId = null;
 		if (order.lineItems) {
 			let orderData = {
@@ -39,15 +39,15 @@ async function createOrder(order, user) {
 				}
 			};
 
-			if(lookupDiscount?.discount_code?.code) {
+			if (lookupDiscount?.discount_code?.code) {
 				orderData.draft_order.applied_discount = {
 					"title": order?.appliedDiscount?.title,
 					"amount": order?.appliedDiscount?.amount,
-					"description":order?.appliedDiscount?.description,
-					"value_type":order?.appliedDiscount?.value_type,
+					"description": order?.appliedDiscount?.description,
+					"value_type": order?.appliedDiscount?.value_type,
 					"value": order?.appliedDiscount?.value,
 				}
-			  }
+			}
 			let draftOrder = await shopifyService.postCall('draft_orders.json', orderData);
 			if (draftOrder?.draft_order) {
 				let completeOrder = await shopifyService.putCall('/draft_orders/' + draftOrder.draft_order.id + '/complete.json?payment_pending=true', {});
@@ -59,16 +59,31 @@ async function createOrder(order, user) {
 		throw e;
 	}
 }
-async function orderPayment(transactionDetails){
-	try{
-		console.log("transactionDetails................",transactionDetails);
-		let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${transactionDetails.transaction.orderId}/transactions.json`,transactionDetails);
-		console.log("Transaction................",transaction);
-		return transaction.status;
+async function orderPayment(orderDetails) {
+	try {
+		let transactionDeatils = await shopifyService.getCall(`/admin/api/2023-04/orders/${orderDetails.orderId}/transactions.json`);
+		if (transactionDeatils && transactionDeatils.transactions.length > 0) {
+			let transactionId = transactionDeatils.transactions.id
+			let transactionObj = {
+				transaction: {
+					currency: "USD",
+					amount: orderData.amount,
+					kind: "capture",
+					parent_id: transactionId
+				}
+			};
+			try {
+				let transaction = await shopifyService.postCall(`/admin/api/2023-04/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
+				return transaction;
+			} catch (e) {
+				throw e;
+			}
+		}
 	}
 	catch (e) {
 		throw e;
 	}
+	return {};
 }
 
 module.exports = {
