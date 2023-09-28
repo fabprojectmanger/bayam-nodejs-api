@@ -61,11 +61,10 @@ async function createOrder(order, user) {
 }
 async function orderPayment(orderDetails) {
 	try {
-		console.log("----------orderDetails-----------",orderDetails.orderId);
 		let transactionDeatils = await shopifyService.getCall(`/orders/${orderDetails.orderId}/transactions.json`);
-		console.log("--Transaction Details ---------------",transactionDeatils)
 		if (transactionDeatils && transactionDeatils.transactions.length > 0) {
-			let transactionId = transactionDeatils.transactions.id
+			console.log("Transaction ID:",transactionDeatils.transactions[0].id)
+			let transactionId = transactionDeatils.transactions[0].id
 			let transactionObj = {
 				transaction: {
 					currency: "USD",
@@ -74,8 +73,6 @@ async function orderPayment(orderDetails) {
 					parent_id: transactionId
 				}
 			};
-			console.log("---------------------",transactionId);
-			console.log("**********************",transactionObj)
 			try {
 				// let transaction = await shopifyService.postCall(`/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
 				// return transaction;

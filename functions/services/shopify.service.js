@@ -12,7 +12,6 @@ const HEADER = {
 async function getCall(params) {
   try {
     let url = `${SHOPIFY_BASE_URL}${params}`;
-    console.log("URL ...................",url);
     const response = await axios.get(url, { headers: HEADER });
     return response.data;
   } catch (error) {
