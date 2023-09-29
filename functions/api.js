@@ -8,8 +8,10 @@ let session = require("express-session");
 let bodyParser = require("body-parser");
 const { expressjwt } = require('express-jwt');
 const serverless = require("serverless-http");
+const mongoose = require('mongoose');
+// var paypal = require('paypal-rest-sdk');
 
-
+app.use(cors());
 let morganFormatString =
   '[:date[clf]] ":method :status :url" ":user-agent" - :response-time ms';
 
@@ -36,6 +38,18 @@ app.use(
     methods: "GET, PUT",
   })
 );
+const mongoURI = 'mongodb+srv://amanTheFabcode:nINprwqTglckzrDq@bayam.2oowia3.mongodb.net/?retryWrites=true&w=majority';
+async function connect() {
+  try {
+    await mongoose.connect(mongoURI);
+    console.log("Connected to MongoDB")
+  }
+  catch (error) {
+    console.log("Error Connected DB: ", error)
+  }
+}
+
+connect();
 
 app.use(allowCrossDomain);
 app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" }));
@@ -101,18 +115,10 @@ app.use('/api', expressjwt(
     ]
   })
 );
-
+//Netlify
 app.use("/.netlify/functions/api/orders", require("./controllers/orders.controller"));
 app.use("/.netlify/functions/api/discount", require("./controllers/discount.controller"))
-// app.use("/api/creditcards", require("./controllers/creditcard.controller"));
-
-// app.use("/stripe", require("./controllers/stripe.controller"));
-
-// Webhooks
-// app.use(
-//   "/api/webhooks/shopify",
-//   require("./controllers/webhooks/shopify.controller")
-// );
+app.use("/.netlify/functions/api/process-payment", require("./controllers/stripePayment.controller"))
 
 // Handle all other routes
 app.all("*", function (req, res) {
@@ -128,6 +134,7 @@ app.use(function (err, req, res) {
     res.status(500).send("Server Error");
   }
 });
+
 
 // Start server
 let server = app.listen(process.env.PORT || 5858, function () {

@@ -1,10 +1,11 @@
 let shopifyService = require('./shopify.service');
+const Transaction = require('../models//transactions');
 
 async function createOrder(order, user) {
 	try {
 
 		let lookupDiscount = await shopifyService.getCall(`/discount_codes/lookup.json?code=${order?.appliedDiscount?.title}`);
-		
+
 		let orderId = null;
 		if (order.lineItems) {
 			let orderData = {
@@ -34,14 +35,18 @@ async function createOrder(order, user) {
 					},
 					"subtotal_price": order?.subTotalPrice,
 					"total_price": order?.totalPrice,
-					"total_tax": order?.totalTax
+					"total_tax": order?.totalTax,
+					"taxes_included": false,
 				}
 			};
 
-			if(lookupDiscount?.discount_code?.code) {
+			if (lookupDiscount?.discount_code?.code) {
 				orderData.draft_order.applied_discount = {
 					"title": order?.appliedDiscount?.title,
-					"amount": order?.appliedDiscount?.amount
+					"amount": order?.appliedDiscount?.amount,
+					"description": order?.appliedDiscount?.description,
+					"value_type": order?.appliedDiscount?.value_type,
+					"value": order?.appliedDiscount?.value,
 				}
 			}
 			let draftOrder = await shopifyService.postCall('draft_orders.json', orderData);
@@ -55,7 +60,47 @@ async function createOrder(order, user) {
 		throw e;
 	}
 }
+async function orderPayment(orderDetails) {
+	try {
+		let transactionDeatils = await shopifyService.getCall(`/orders/${orderDetails.orderId}/transactions.json`);
+		if (transactionDeatils && transactionDeatils.transactions.length > 0) {
+			let transactionId = transactionDeatils.transactions[0].id
+			let transactionObj = {
+				transaction: {
+					currency: "USD",
+					amount: orderDetails.amount,
+					kind: "capture",
+					parent_id: transactionId
+				}
+			};
+			try {
+				let transaction = await shopifyService.postCall(`/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
+				if (transaction) {
+					let transactionDetails = {
+						paymentMethodId: transactionId,
+						paymentStatus: "Success",
+						paymentType: orderDetails.paymentType,
+						amount: {
+							value: parseFloat(orderDetails.amount),
+							currency: 'USD'
+						}
+					}
+					const transaction = new Transaction(transactionDetails);
+					await transaction.save();
+				}
+				return transaction;
+			} catch (e) {
+				throw e;
+			}
+		}
+	}
+	catch (e) {
+		throw e;
+	}
+	return {};
+}
 
 module.exports = {
-	createOrder
+	createOrder,
+	orderPayment
 }

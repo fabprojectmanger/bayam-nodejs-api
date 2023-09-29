@@ -1,5 +1,26 @@
 let shopifyService = require('./shopify.service');
-
+async function getDiscountCodes(data) {
+	try {
+		let lookupDiscount = await shopifyService.getCall(`/discount_codes/lookup.json?code=${data}`);
+		if (lookupDiscount) {
+			return lookupDiscount;
+		}
+		return {};
+	} catch (e) {
+		throw e;
+	}
+}
+async function getOfferDetails(data) {
+	try {
+		let filterPrice = await shopifyService.getCall(`/price_rules/${data}.json`);
+		if (filterPrice) {
+			return filterPrice;
+		}
+		return {};
+	} catch (e) {
+		throw e;
+	}
+}
 async function getDiscountCouponDetails({ code }, user) {
 	try {
 
@@ -36,5 +57,7 @@ async function getDiscountCouponDetails({ code }, user) {
 }
 
 module.exports = {
-	getDiscountCouponDetails
+	getDiscountCouponDetails,
+	getDiscountCodes,
+	getOfferDetails
 }
