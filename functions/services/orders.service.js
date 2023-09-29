@@ -81,7 +81,7 @@ async function orderPayment(orderDetails) {
 						paymentStatus: "Success",
 						paymentType: orderDetails.paymentType,
 						amount: {
-							value: orderDetails.amount,
+							value: parseFloat(orderDetails.amount),
 							currency: 'USD'
 						}
 					}
