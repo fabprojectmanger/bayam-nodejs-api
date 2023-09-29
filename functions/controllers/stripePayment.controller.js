@@ -1,6 +1,7 @@
 let puppeteer = require('puppeteer');
 const chromium = require("@sparticuz/chromium");
 let express = require('express');
+const Transaction = require('../models/transactions');
 let router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 chromium.setHeadlessMode = true; 
@@ -39,6 +40,19 @@ router.post('/', async function (req, res) {
       const page = await browser.newPage();
       await page.goto(url);
       await browser.close();
+      if(paymentIntent && paymentIntent.id){
+        let transactionDetails={
+          customerId:customer.id,
+          paymentMethodId:paymentMethodId,
+          paymentStatus:"Success",
+          amount:{
+            value: amount,
+            currency:'USD'
+          }
+        }
+        const transaction = new Transaction(transactionDetails);
+        await transaction.save();
+      }
 
     }
     res.json({ success: true, paymentIntent });
