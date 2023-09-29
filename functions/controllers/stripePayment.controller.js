@@ -4,7 +4,7 @@ let router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 router.post('/', async function (req, res) {
-  const { paymentMethodId, customerName, line1, city, state, postalCode, country } = req.body;
+  const { paymentMethodId, customerName, line1, city, state, postalCode, country,amount } = req.body;
   try {
     const customer = await stripe.customers.create({
       name: customerName,
@@ -17,7 +17,7 @@ router.post('/', async function (req, res) {
       }
     });
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 3,
+      amount: amount,
       currency: 'USD',
       description: 'Example Payment',
       payment_method_types: ['card'],
@@ -27,7 +27,7 @@ router.post('/', async function (req, res) {
     });
     if (paymentIntent && paymentIntent.next_action) {
       let url = paymentIntent.next_action.use_stripe_sdk.stripe_js;
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
       const page = await browser.newPage();
       await page.goto(url);
       await browser.close();
