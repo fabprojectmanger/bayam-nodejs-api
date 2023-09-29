@@ -63,6 +63,7 @@ async function createOrder(order, user) {
 async function orderPayment(orderDetails) {
 	try {
 		let transactionDeatils = await shopifyService.getCall(`/orders/${orderDetails.orderId}/transactions.json`);
+		console.log("Transaction Details -----------------------",transactionDeatils);
 		if (transactionDeatils && transactionDeatils.transactions.length > 0) {
 			let transactionId = transactionDeatils.transactions[0].id
 			let transactionObj = {
@@ -75,6 +76,7 @@ async function orderPayment(orderDetails) {
 			};
 			try {
 				let transaction = await shopifyService.postCall(`/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
+				console.log("Transaction ------>",transaction);
 				if (transaction) {
 					let transactionDetails = {
 						paymentMethodId: transactionId,
