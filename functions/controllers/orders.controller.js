@@ -18,7 +18,6 @@ router.post('/', async function (req, res) {
 });
 router.post('/payment', async function (req, res) {
 	try {
-		console.log("---------------->",req.body)
 		let data = await OrdersService.orderPayment(req.body);
 		let response = ResponseService.response(data, null);
 		res.status(200).send(response);
