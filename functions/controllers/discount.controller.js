@@ -16,9 +16,9 @@ router.get('/', async function (req, res) {
 
 router.post('/validate-discount', async function (req, res) {
 	try {
-        const couponCode = req.body.couponcode;
-		let lookupDiscount=await discountService.getDiscountCodes(couponCode);
-        let data = await discountService.getOfferDetails(lookupDiscount?.discount_code?.price_rule_id);
+		const couponCode = req.body.couponcode;
+		let lookupDiscount = await discountService.getDiscountCodes(couponCode);
+		let data = await discountService.getOfferDetails(lookupDiscount?.discount_code?.price_rule_id);
 		let response = ResponseService.response(data, null);
 		res.status(200).send(response);
 	} catch (error) {

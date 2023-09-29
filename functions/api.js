@@ -39,13 +39,13 @@ app.use(
   })
 );
 const mongoURI = 'mongodb+srv://amanTheFabcode:nINprwqTglckzrDq@bayam.2oowia3.mongodb.net/?retryWrites=true&w=majority';
-async function connect(){
-  try{
+async function connect() {
+  try {
     await mongoose.connect(mongoURI);
     console.log("Connected to MongoDB")
   }
-  catch(error){
-    console.log("Error Caught.............",error)
+  catch (error) {
+    console.log("Error Connected DB: ", error)
   }
 }
 
@@ -118,7 +118,7 @@ app.use('/api', expressjwt(
 //Netlify
 app.use("/.netlify/functions/api/orders", require("./controllers/orders.controller"));
 app.use("/.netlify/functions/api/discount", require("./controllers/discount.controller"))
-app.use("/.netlify/functions/api/process-payment",require("./controllers/stripePayment.controller"))
+app.use("/.netlify/functions/api/process-payment", require("./controllers/stripePayment.controller"))
 
 // Handle all other routes
 app.all("*", function (req, res) {

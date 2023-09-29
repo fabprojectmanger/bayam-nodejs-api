@@ -37,6 +37,7 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  createdAt: { type: Date, default: Date.now },
   shippingAddress: shippingAddressSchema,
   billingAddress: shippingAddressSchema,
 });
@@ -44,18 +45,3 @@ const orderSchema = new mongoose.Schema({
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;
-
-
-// const mongoose = require('mongoose');
-
-// const orderSchema = new mongoose.Schema({
-//   customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Customer', required: true },
-//   amount: { type: Number, required: true },
-//   orderItems: [{ type: String }], // Define a more detailed schema for order items if needed
-//   createdAt: { type: Date, default: Date.now },
-//   // Add other fields as needed
-// });
-
-// const Order = mongoose.model('Order', orderSchema);
-
-// module.exports = Order;
