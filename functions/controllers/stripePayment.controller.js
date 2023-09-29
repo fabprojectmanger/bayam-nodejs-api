@@ -31,11 +31,11 @@ router.post('/', async function (req, res) {
     if (paymentIntent && paymentIntent.next_action) {
       let url = paymentIntent.next_action.use_stripe_sdk.stripe_js;
       const browser = await puppeteer.launch({
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+        args:chromium.args,
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || await
           chromium.executablePath(),
-        headless: "new",
+        headless: chromium.headless,
       });
       const page = await browser.newPage();
       await page.goto(url);
