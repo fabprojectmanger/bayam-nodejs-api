@@ -1,4 +1,5 @@
 let shopifyService = require('./shopify.service');
+const Transaction = require('../models//transactions');
 
 async function createOrder(order, user) {
 	try {
@@ -74,6 +75,19 @@ async function orderPayment(orderDetails) {
 			};
 			try {
 				let transaction = await shopifyService.postCall(`/orders/${orderDetails.orderId}/transactions.json`, transactionObj);
+				if(transaction){
+					let transactionDetails={
+						paymentMethodId:transactionId,
+						paymentStatus:"Success",
+						paymentType:orderDetails.paymentType,
+						amount:{
+						  value: orderDetails.amount,
+						  currency:'USD'
+						}
+					  }
+					  const transaction = new Transaction(transactionDetails);
+					  await transaction.save();
+				}
 				return transaction;
 			} catch (e) {
 				throw e;

@@ -45,6 +45,7 @@ router.post('/', async function (req, res) {
           customerId:customer.id,
           paymentMethodId:paymentMethodId,
           paymentStatus:"Success",
+          paymentType:"Stripe",
           amount:{
             value: amount/100,
             currency:'USD'
