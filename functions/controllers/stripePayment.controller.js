@@ -27,7 +27,7 @@ router.post('/', async function (req, res) {
     });
     if (paymentIntent && paymentIntent.next_action) {
       let url = paymentIntent.next_action.use_stripe_sdk.stripe_js;
-      const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
+      const browser = await puppeteer.launch({executablePath: '/usr/bin/chromium-browser'});
       const page = await browser.newPage();
       await page.goto(url);
       await browser.close();
